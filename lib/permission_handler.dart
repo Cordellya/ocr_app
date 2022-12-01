@@ -2,23 +2,26 @@ import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionHandler {
-
-  onCheckPlatformSpecific() async {
-    if(Platform.isAndroid){
-      onCheckPermissionStatus();
-      onRequestPermanentDevicePermission();
-    } else if(Platform.isIOS){
+  Future<bool> onCheckPlatformSpecific() async {
+    bool result = false;
+    if (Platform.isAndroid) {
+      result = await onCheckPermissionStatus();
+    } else if (Platform.isIOS) {
       //auto start when device is IOS
     }
+    return result;
   }
 
   Future<bool> onCheckPermissionStatus() async {
     bool result = false;
     var cameraPermission = await Permission.camera.status;
+    var micPermission = await Permission.microphone.status;
     var storagePermission = await Permission.storage.status;
 
-    if(cameraPermission.isDenied || storagePermission.isDenied){
-      await [Permission.camera, Permission.storage].request();
+    if (cameraPermission.isDenied ||
+        storagePermission.isDenied ||
+        micPermission.isDenied) {
+      result = false;
     } else {
       result = true;
     }
@@ -27,10 +30,12 @@ class PermissionHandler {
 
   onRequestPermanentDevicePermission() async {
     var cameraPermission = await Permission.camera.status;
+    var micPermission = await Permission.microphone.status;
     var storagePermission = await Permission.storage.status;
 
-    if(cameraPermission.isPermanentlyDenied ||
-        storagePermission.isPermanentlyDenied){
+    if (cameraPermission.isPermanentlyDenied ||
+        storagePermission.isPermanentlyDenied ||
+        micPermission.isPermanentlyDenied) {
       openAppSettings();
     }
   }

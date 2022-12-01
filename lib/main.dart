@@ -4,12 +4,16 @@ import 'package:get/get.dart';
 import 'package:research_mayora/Camera/CameraPreviewPage.dart';
 import 'package:research_mayora/homepage.dart';
 import 'package:research_mayora/permission_handler.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   //ensure flutter widget run
   WidgetsFlutterBinding.ensureInitialized();
 
-  await PermissionHandler().onCheckPlatformSpecific();
+  await PermissionHandler().onCheckPlatformSpecific()
+      ? null
+      : await [Permission.camera, Permission.storage, Permission.microphone]
+          .request();
 
   //lock app orientation to portrait
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
